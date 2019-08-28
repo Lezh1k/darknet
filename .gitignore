@@ -25,3 +25,9 @@ ehthumbs.db
 Icon?
 Thumbs.db
 *.swp
+
+# qt-creator
+*.pro.*
+
+# weights
+*.weights
