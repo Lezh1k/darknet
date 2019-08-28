@@ -1,5 +1,5 @@
-GPU=0
-CUDNN=0
+GPU=1
+CUDNN=1
 OPENCV=1
 OPENMP=0
 DEBUG=0
@@ -40,7 +40,7 @@ endif
 CFLAGS+=$(OPTS)
 
 ifeq ($(OPENCV), 1) 
-COMMON+= -DOPENCV -I/usr/include/opencv4 -I/usr/include/opencv4/opencv2
+COMMON+= -DOPENCV -I/usr/include/opencv4 -I/usr/include/opencv4/opencv2 -I/usr/local/include/opencv4 -I/usr/local/include/opencv4/opencv2
 CFLAGS+= -DOPENCV
 LDFLAGS+= `pkg-config --libs opencv4` -lstdc++
 COMMON+= `pkg-config --cflags opencv4` 
