@@ -31,14 +31,14 @@ static Mat image_to_mat_internal(image im)
   return m;
 }
 
-static image mat_to_image_internal(const Mat& src)
+static image mat_to_image_internal(const Mat* src)
 {
-  int h = src.rows;
-  int w = src.cols;
-  int c = src.channels();
+  int h = src->rows;
+  int w = src->cols;
+  int c = src->channels();
   image im = make_image(w, h, c);
-  unsigned char *data = (unsigned char *)src.data;
-  size_t step = static_cast<size_t>(src.step);
+  unsigned char *data = (unsigned char *)src->data;
+  size_t step = static_cast<size_t>(src->step);
   int i, j, k;
 
   for(i = 0; i < h; ++i){
@@ -61,9 +61,9 @@ static Mat image_to_mat(image im)
   return m;
 }
 
-static image mat_to_image(const Mat& m)
-{  
-  image im = mat_to_image_internal(m);
+image mat_to_image(const void* m)
+{
+  image im = mat_to_image_internal((const Mat*)m);
   rgbgr_image(im);
   return im;
 }
@@ -86,7 +86,7 @@ image get_image_from_stream(void *p)
   Mat m;
   *cap >> m;
   if(m.empty()) return make_empty_image(0,0,0);
-  return mat_to_image(m);
+  return mat_to_image((void*)&m);
 }
 
 image load_image_cv(char *filename, int channels)
@@ -108,7 +108,7 @@ image load_image_cv(char *filename, int channels)
     return make_image(10,10,3);
     //exit(0);
   }
-  image im = mat_to_image(m);
+  image im = mat_to_image((void*)&m);
   return im;
 }
 
