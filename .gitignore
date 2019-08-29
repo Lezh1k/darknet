@@ -31,3 +31,4 @@ Thumbs.db
 
 # weights
 *.weights
+compile_commands.json

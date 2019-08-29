@@ -584,7 +584,7 @@ typedef struct{
 } box_label;
 
 
-network *load_network(char *cfg, char *weights, int clear);
+network *load_network(const char *cfg, const char *weights, int clear);
 load_args get_base_args(network *net);
 
 void free_data(data d);
@@ -603,7 +603,7 @@ typedef struct list{
 
 pthread_t load_data(load_args args);
 list *read_data_cfg(char *filename);
-list *read_cfg(char *filename);
+list *read_cfg(const char *filename);
 unsigned char *read_file(char *filename);
 data resize_data(data orig, int w, int h);
 data *tile_data(data orig, int divs, int size);
@@ -679,11 +679,11 @@ char *option_find_str(list *l, char *key, char *def);
 int option_find_int(list *l, char *key, int def);
 int option_find_int_quiet(list *l, char *key, int def);
 
-network *parse_network_cfg(char *filename);
+network *parse_network_cfg(const char *filename);
 void save_weights(network *net, char *filename);
-void load_weights(network *net, char *filename);
+void load_weights(network *net, const char *filename);
 void save_weights_upto(network *net, char *filename, int cutoff);
-void load_weights_upto(network *net, char *filename, int start, int cutoff);
+void load_weights_upto(network *net, const char *filename, int start, int cutoff);
 
 void zero_objectness(layer l);
 void get_region_detections(layer l, int w, int h, int netw, int neth, float thresh, int *map, float tree_thresh, int relative, detection *dets);
