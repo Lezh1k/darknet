@@ -1,8 +1,28 @@
+GPU=$(DARKNET_GPU)
+CUDNN=$(DARKNET_CUDNN)
+OPENCV=$(DARKNET_OPENCV)
+OPENMP=$(DARKNET_OPENMP)
+DEBUG=$(DARKNET_DEBUG)
+
+ifeq ($(DARKNET_GPU),)
 GPU=1
+endif
+
+ifeq ($(DARKNET_CUDNN),)
 CUDNN=1
+endif
+
+ifeq ($(DARKNET_OPENCV),)
 OPENCV=1
+endif
+
+ifeq ($(DARKNET_OPENMP),)
 OPENMP=0
+endif
+
+ifeq ($(DARKNET_DEBUG),)
 DEBUG=0
+endif
 
 ARCH= -gencode arch=compute_30,code=sm_30 \
       -gencode arch=compute_35,code=sm_35 \
