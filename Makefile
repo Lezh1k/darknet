@@ -9,7 +9,7 @@ GPU=1
 endif
 
 ifeq ($(DARKNET_CUDNN),)
-CUDNN=1
+CUDNN=0
 endif
 
 ifeq ($(DARKNET_OPENCV),)
@@ -24,14 +24,28 @@ ifeq ($(DARKNET_DEBUG),)
 DEBUG=0
 endif
 
-ARCH= -gencode arch=compute_30,code=sm_30 \
-      -gencode arch=compute_35,code=sm_35 \
-      -gencode arch=compute_50,code=[sm_50,compute_50] \
-      -gencode arch=compute_52,code=[sm_52,compute_52]
+ARCH= \
+# -gencode=arch=compute_60,code=sm_60 \ 
+# -gencode=arch=compute_61,code=sm_61 \ 
+# -gencode=arch=compute_70,code=sm_70
+ -gencode=arch=compute_75,code=sm_75
+# -gencode=arch=compute_80,code=sm_80 
+# -gencode=arch=compute_86,code=sm_86 
+# -gencode=arch=compute_86,code=compute_86
+
 #      -gencode arch=compute_20,code=[sm_20,sm_21] \ This one is deprecated?
 
 # This is what I use, uncomment if you know your arch and want to specify
 # ARCH= -gencode arch=compute_52,code=compute_52
+
+#ARCH= -gencode=arch=compute_52,code=sm_52 \ 
+# -gencode=arch=compute_60,code=sm_60 \ 
+# -gencode=arch=compute_61,code=sm_61 \ 
+# -gencode=arch=compute_70,code=sm_70 \ 
+# -gencode=arch=compute_75,code=sm_75 \
+# -gencode=arch=compute_80,code=sm_80 \
+# -gencode=arch=compute_86,code=sm_86 \
+# -gencode=arch=compute_86,code=compute_86
 
 VPATH=./src/:./examples
 SLIB=libdarknet.so
@@ -60,16 +74,16 @@ endif
 CFLAGS+=$(OPTS)
 
 ifeq ($(OPENCV), 1) 
-COMMON+= -DOPENCV -I/usr/include/opencv4 -I/usr/include/opencv4/opencv2 -I/usr/local/include/opencv4 -I/usr/local/include/opencv4/opencv2
+COMMON+= -DOPENCV -I/usr/include/opencv4 
 CFLAGS+= -DOPENCV
 LDFLAGS+= `pkg-config --libs opencv4` -lstdc++
 COMMON+= `pkg-config --cflags opencv4` 
 endif
 
 ifeq ($(GPU), 1) 
-COMMON+= -DGPU -I/usr/local/cuda/include/
+COMMON+= -DGPU -I/opt/cuda/include
 CFLAGS+= -DGPU
-LDFLAGS+= -L/usr/local/cuda/lib64 -lcuda -lcudart -lcublas -lcurand
+LDFLAGS+= -L/opt/cuda/targets/x86_64-linux/lib -lcuda -lcudart -lcublas -lcurand
 endif
 
 ifeq ($(CUDNN), 1) 

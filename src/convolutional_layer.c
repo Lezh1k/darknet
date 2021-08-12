@@ -145,30 +145,79 @@ void cudnn_convolutional_setup(layer *l)
     }
     #endif
 
-    cudnnGetConvolutionForwardAlgorithm(cudnn_handle(),
-            l->srcTensorDesc,
-            l->weightDesc,
-            l->convDesc,
-            l->dstTensorDesc,
-            CUDNN_CONVOLUTION_FWD_SPECIFY_WORKSPACE_LIMIT,
-            2000000000,
-            &l->fw_algo);
-    cudnnGetConvolutionBackwardDataAlgorithm(cudnn_handle(),
-            l->weightDesc,
-            l->ddstTensorDesc,
-            l->convDesc,
-            l->dsrcTensorDesc,
-            CUDNN_CONVOLUTION_BWD_DATA_SPECIFY_WORKSPACE_LIMIT,
-            2000000000,
-            &l->bd_algo);
-    cudnnGetConvolutionBackwardFilterAlgorithm(cudnn_handle(),
-            l->srcTensorDesc,
-            l->ddstTensorDesc,
-            l->convDesc,
-            l->dweightDesc,
-            CUDNN_CONVOLUTION_BWD_FILTER_SPECIFY_WORKSPACE_LIMIT,
-            2000000000,
-            &l->bf_algo);
+    int convolutionForwardAlgorithmN, convolutionForwardAlgorithmMax = 1;
+    cudnnConvolutionFwdAlgoPerf_t fwdAlgoPerf;
+    cudnnStatus_t st =
+        cudnnGetConvolutionForwardAlgorithmMaxCount(cudnn_handle(), &convolutionForwardAlgorithmMax);
+    if (st != CUDNN_STATUS_SUCCESS) {
+      printf("failed to cudnnGetConvolutionForwardAlgorithmMaxCount : %d\n", st);
+      exit(1);
+    }
+
+    st = cudnnFindConvolutionForwardAlgorithm(
+          cudnn_handle(),
+          l->srcTensorDesc,
+          l->weightDesc,
+          l->convDesc,
+          l->dstTensorDesc,
+          convolutionForwardAlgorithmMax,
+          &convolutionForwardAlgorithmN,
+          &fwdAlgoPerf);
+
+    if (st != CUDNN_STATUS_SUCCESS) {
+      printf("failed to cudnnFindConvolutionForwardAlgorithm : %d\n", st);
+      exit(1);
+    }
+    l->fw_algo = fwdAlgoPerf.algo;
+
+    int backwardDataAlgorithmN, backwardDataAlgorithmMax = 1;
+    cudnnConvolutionBwdDataAlgoPerf_t bwdDataAlgoPerf;
+    st = cudnnGetConvolutionBackwardDataAlgorithmMaxCount(cudnn_handle(),
+                                                          &backwardDataAlgorithmMax);
+
+    if (st != CUDNN_STATUS_SUCCESS) {
+      printf("failed to cudnnGetConvolutionBackwardDataAlgorithmMaxCount : %d\n", st);
+      exit(1);
+    }
+
+    st = cudnnFindConvolutionBackwardDataAlgorithm(cudnn_handle(),
+                                                   l->weightDesc,
+                                                   l->ddstTensorDesc,
+                                                   l->convDesc,
+                                                   l->dsrcTensorDesc,
+                                                   backwardDataAlgorithmMax,
+                                                   &backwardDataAlgorithmN,
+                                                   &bwdDataAlgoPerf);
+
+    if (st != CUDNN_STATUS_SUCCESS) {
+      printf("failed to cudnnConvolutionBwdDataAlgoPerf_t : %d\n", st);
+      exit(1);
+    }
+    l->bd_algo = bwdDataAlgoPerf.algo;
+
+
+    int bwdFilterAlgoN, bwdFilterAlgoMax = 1;
+    cudnnConvolutionBwdFilterAlgoPerf_t bwdFilterAlgoPerf;
+    st = cudnnGetConvolutionBackwardFilterAlgorithmMaxCount(cudnn_handle(), &bwdFilterAlgoMax);
+    if (st != CUDNN_STATUS_SUCCESS) {
+      printf("failed to cudnnGetConvolutionBackwardFilterAlgorithmMaxCount : %d\n", st);
+      exit(1);
+    }
+
+    st = cudnnFindConvolutionBackwardFilterAlgorithm(cudnn_handle(),
+                                                     l->srcTensorDesc,
+                                                     l->ddstTensorDesc,
+                                                     l->convDesc,
+                                                     l->dweightDesc,
+                                                     bwdFilterAlgoMax,
+                                                     &bwdFilterAlgoN,
+                                                     &bwdFilterAlgoPerf);
+
+    if (st != CUDNN_STATUS_SUCCESS) {
+      printf("failed to cudnnGetConvolutionBackwardFilterAlgorithmMaxCount : %d\n", st);
+      exit(1);
+    }
+    l->bf_algo = bwdFilterAlgoPerf.algo;
 }
 #endif
 #endif

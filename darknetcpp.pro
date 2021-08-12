@@ -3,7 +3,7 @@ CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
-DEFINES += OPENCV
+DEFINES += OPENCV GPU
 INCLUDEPATH += \
     /usr/include/opencv4 \
     /usr/include/opencv4/opencv2 \
