@@ -81,9 +81,9 @@ COMMON+= `pkg-config --cflags opencv4`
 endif
 
 ifeq ($(GPU), 1) 
-COMMON+= -DGPU -I/opt/cuda/include
+COMMON+= -DGPU `pkg-config --cflags cuda` #-I/opt/cuda/include
 CFLAGS+= -DGPU
-LDFLAGS+= -L/opt/cuda/targets/x86_64-linux/lib -lcuda -lcudart -lcublas -lcurand
+LDFLAGS+= `pkg-config --libs cuda`  -lcudart -lcublas -lcurand
 endif
 
 ifeq ($(CUDNN), 1) 
